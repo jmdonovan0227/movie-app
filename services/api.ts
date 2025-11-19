@@ -1,0 +1,32 @@
+export const TMDB_CONFIG = {
+  BASE_URL: "https://api.themoviedb.org/3",
+  API_KEY: process.env.EXPO_PUBLIC_MOVIE_API_KEY,
+  headers: {
+    accept: "application/json",
+    Authorization: `Bearer ${process.env.EXPO_PUBLIC_MOVIE_API_KEY}`,
+  },
+};
+
+export const fetchMovies = async ({ query }: { query: string }) => {
+  // most popular movies
+  // whenever we are passing strings through a url it is better to encode them in case there are any weird characters
+  // that are not allowed in a url.
+  const endpoint = query
+    ? `${TMDB_CONFIG.BASE_URL}/search/movie?query=${encodeURIComponent(query)}` // search based on query
+    : `${TMDB_CONFIG.BASE_URL}/discover/movie?sort_by=popularity.desc`; // just get the most popular movies
+
+  const response = await fetch(endpoint, {
+    method: "GET",
+    headers: TMDB_CONFIG.headers,
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch movies: ${response.status} ${response.statusText}`
+    );
+  }
+
+  const data = await response.json();
+
+  return data.results;
+};
