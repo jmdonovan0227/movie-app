@@ -1,15 +1,11 @@
 import { View, Image, ActivityIndicator, Text, FlatList } from "react-native";
 import { images } from "@/constants/images";
 import { icons } from "@/constants/icons";
-import SearchBar from "@/components/SearchBar";
-import { useRouter } from "expo-router";
 import useFetch from "@/services/useFetch";
 import { fetchMovies } from "@/services/api";
 import MovieCard from "@/components/MovieCard";
 
 export default function Index() {
-  const router = useRouter();
-
   // we call useFetch function and pass a callback function which is fetchFunction
   // so we can essentially use useFetch with any fetch function we want!
   const {
@@ -39,11 +35,6 @@ export default function Index() {
         </Text>
       ) : (
         <View className="flex-1 mt-5">
-          <SearchBar
-            onPress={() => router.push("/search")}
-            placeholder="Search for a movie"
-          />
-
           <>
             <Text className="text-lg text-white font-bold mt-5 mb-3">
               Latest Movies
