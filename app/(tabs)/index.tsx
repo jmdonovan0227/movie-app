@@ -9,7 +9,6 @@ export default function Index() {
       </Text>
 
       <Link href="/onboarding">Onboarding Link</Link>
-      <Link href="/movies/fast-and-furious">Fast and Furious</Link>
     </View>
   );
 }

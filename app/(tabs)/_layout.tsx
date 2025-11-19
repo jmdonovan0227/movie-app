@@ -3,8 +3,17 @@ import { ImageBackground, Image, Text, View } from "react-native";
 
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
+import type { ImageSourcePropType } from "react-native";
 
-function TabIcon({ focused, icon, title }: any) {
+function TabIcon({
+  focused,
+  icon,
+  title,
+}: {
+  focused: boolean;
+  icon: ImageSourcePropType;
+  title: string;
+}) {
   if (focused) {
     return (
       <ImageBackground
