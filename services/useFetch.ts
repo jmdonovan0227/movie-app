@@ -9,17 +9,32 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
 
   // Only update fetchData when fetchFunction changes.
   const fetchData = useCallback(async () => {
+    let isCancelled = false;
     try {
       setLoading(true);
       setError(null);
 
       const result = await fetchFunction();
       setData(result);
+      if (!isCancelled) {
+        setData(result);
+      }
     } catch (error) {
       setError(error instanceof Error ? error : new Error("An error occurred"));
+      if (!isCancelled) {
+        setError(
+          error instanceof Error ? error : new Error("An error occurred")
+        );
+      }
     } finally {
       setLoading(false);
+      if (!isCancelled) {
+        setLoading(false);
+      }
     }
+    return () => {
+      isCancelled = true;
+    };
   }, [fetchFunction]);
 
   // reset all state to initial values
@@ -29,7 +44,7 @@ const useFetch = <T>(fetchFunction: () => Promise<T>, autoFetch = true) => {
     setLoading(false);
   };
 
-  // if fetchFunction changes or autoFetch is changed, and authFetch is true then fetch data!
+  // if fetchFunction changes or autoFetch is changed, and autoFetch is true then fetch data!
   useEffect(() => {
     if (autoFetch) {
       fetchData();
