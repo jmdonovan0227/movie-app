@@ -1,14 +1,20 @@
 import { View, Image, FlatList, ActivityIndicator, Text } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { images } from "@/constants/images";
 import useFetch from "@/services/useFetch";
 import { fetchMovies } from "@/services/api";
 import MovieCard from "@/components/MovieCard";
 import { icons } from "@/constants/icons";
 import SearchBar from "@/components/SearchBar";
+import { updateSearchCount } from "@/services/appwrite";
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
+
+  const fetchMoviesFunction = useCallback(
+    () => fetchMovies({ query: searchQuery }),
+    [searchQuery]
+  );
 
   const {
     data: movies,
@@ -16,16 +22,9 @@ const Search = () => {
     refetch: loadMovies,
     reset: resetMovies,
     error,
-  } = useFetch(
-    () =>
-      fetchMovies({
-        query: searchQuery,
-      }),
-    false
-  ); // We want user to search first, not automatically fetch data!
+  } = useFetch(fetchMoviesFunction, false);
 
   useEffect(() => {
-    // debounce the search query
     const timeoutId = setTimeout(async () => {
       if (searchQuery.trim()) {
         await loadMovies();
@@ -36,6 +35,19 @@ const Search = () => {
 
     return () => clearTimeout(timeoutId);
   }, [searchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
+  // KEY DETAIL: We don't need to include loadMovies and resetMovies in the dependency array because we are using the refetch and reset methods
+  // from the useFetch hook which are memoized and will not change unless the fetchMoviesFunction changes.
+  // fetchMoviesFunction is memoized and will not change unless the searchQuery changes. Which
+  // causes useFetch to refetch data as the callback is a dependency of useFetch. So in short,
+  // searchQuery is the only dependency that is needed to be included in the dependency array.
+
+  useEffect(() => {
+    (async () => {
+      if (movies?.length > 0 && movies?.[0]) {
+        await updateSearchCount(searchQuery, movies[0]);
+      }
+    })();
+  }, [movies, searchQuery]);
 
   // columnWrapperStyle is used to style the wrapper of the columns
   // which is the columns that are displayed in the list (we specify 3 columns)
