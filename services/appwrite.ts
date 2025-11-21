@@ -23,30 +23,29 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
       queries: [Query.equal("searchTerm", query)],
     });
 
-    console.log("result from appwrite: ", result);
-
     if (result.total > 0) {
       const existingMovie = result.rows[0];
-      console.log("existingMovie: ", existingMovie);
-      await database.updateRow({
-        rowId: existingMovie.$id,
+
+      // Increment the count for existing row
+      await database.incrementRowColumn({
         databaseId: DATABASE_ID,
         tableId: MET_TABLE_ID,
-        data: {
-          count: existingMovie.count + 1,
-        },
+        rowId: existingMovie.$id,
+        column: "count",
+        value: 1,
       });
     } else {
+      // Create a new row with initial data
       await database.createRow({
         databaseId: DATABASE_ID,
         tableId: MET_TABLE_ID,
         rowId: ID.unique(),
         data: {
           searchTerm: query,
+          movieId: movie.id,
           poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
           count: 1,
           title: movie.title,
-          movie_id: movie.id,
         },
       });
     }

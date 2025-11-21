@@ -47,7 +47,7 @@ const Search = () => {
         await updateSearchCount(searchQuery, movies[0]);
       }
     })();
-  }, [movies]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [movies, searchQuery]);
 
   // columnWrapperStyle is used to style the wrapper of the columns
   // which is the columns that are displayed in the list (we specify 3 columns)
