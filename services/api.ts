@@ -37,13 +37,10 @@ export const fetchMovieDetails = async ({
   movieId: string;
 }): Promise<MovieDetails> => {
   try {
-    const response = await fetch(
-      `${TMDB_CONFIG.BASE_URL}/movie/${movieId}?api_key=${TMDB_CONFIG.API_KEY}`,
-      {
-        method: "GET",
-        headers: TMDB_CONFIG.headers,
-      }
-    );
+    const response = await fetch(`${TMDB_CONFIG.BASE_URL}/movie/${movieId}`, {
+      method: "GET",
+      headers: TMDB_CONFIG.headers,
+    });
 
     if (!response.ok) {
       throw new Error(

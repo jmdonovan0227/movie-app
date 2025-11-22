@@ -9,6 +9,8 @@ const TrendingCard = ({
   index,
 }: TrendingCardProps) => {
   // Use MaskedView to mask the text and show the gradient image to give a gradient effect to the text
+  const displayNumber = typeof index === "number" ? index + 1 : 1;
+
   return (
     <Link href={`/movies/${movie_id}`} asChild>
       <TouchableOpacity>
@@ -20,8 +22,11 @@ const TrendingCard = ({
 
         <View className="absolute bottom-9 -left-3.5 px-2 py-1 rounded-full">
           <MaskedView
+            style={{ width: 56, height: 56 }}
             maskElement={
-              <Text className="text-white font-bold text-6xl">{index + 1}</Text>
+              <Text className="text-white font-bold text-6xl">
+                {displayNumber}
+              </Text>
             }
           >
             <Image

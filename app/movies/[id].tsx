@@ -1,5 +1,5 @@
 import { View, ScrollView, Image, Text, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import useFetch from "@/services/useFetch";
 import { fetchMovieDetails } from "@/services/api";
@@ -22,11 +22,12 @@ const MovieInfo = ({ label, value }: MovieInfoProps) => (
 const MovieDetails = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const { data: movie } = useFetch(() =>
-    fetchMovieDetails({
-      movieId: id,
-    })
+  const fetchMovieDetailsFunction = useCallback(
+    () => fetchMovieDetails({ movieId: id }),
+    [id]
   );
+
+  const { data: movie } = useFetch(fetchMovieDetailsFunction);
 
   return (
     <View className="flex-1 bg-primary">
@@ -34,7 +35,9 @@ const MovieDetails = () => {
         <View>
           <Image
             source={{
-              uri: `https://image.tmdb.org/t/p/w500${movie?.poster_path}`,
+              uri: movie?.poster_path
+                ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+                : "https://via.placeholder.com/500x750?text=No+Poster",
             }}
             className="w-full h-[550px]"
             resizeMode="stretch"
@@ -46,11 +49,11 @@ const MovieDetails = () => {
 
           <View className="flex-row items-center gap-x-1 mt-2">
             <Text className="text-light-200 text-sm">
-              {movie?.release_date?.split("-")[0]}
+              {movie?.release_date?.split("-")[0] ?? "N/A"}
             </Text>
 
             <Text className="text-light-200 text-sm">
-              {movie?.runtime} minutes
+              {movie?.runtime ?? "N/A"} minutes
             </Text>
           </View>
 
