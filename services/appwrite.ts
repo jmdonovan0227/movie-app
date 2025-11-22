@@ -42,7 +42,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
         rowId: ID.unique(),
         data: {
           searchTerm: query,
-          movieId: movie.id,
+          movie_id: movie.id,
           poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
           count: 1,
           title: movie.title,

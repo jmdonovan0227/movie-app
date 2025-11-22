@@ -11,6 +11,10 @@ import TrendingCard from "@/components/TrendingCard";
 export default function Index() {
   // Memoize the fetch function to prevent infinite re-renders
   const fetchMoviesFunction = useCallback(() => fetchMovies({ query: "" }), []);
+  const fetchTrendingMoviesFunction = useCallback(
+    () => getTrendingMovies(),
+    []
+  );
 
   // we call useFetch function and pass a callback function which is fetchFunction
   // so we can essentially use useFetch with any fetch function we want!
@@ -24,8 +28,10 @@ export default function Index() {
     data: trendingMovies,
     loading: trendingMoviesLoading,
     error: trendingMoviesError,
-  } = useFetch(getTrendingMovies);
+  } = useFetch(fetchTrendingMoviesFunction);
 
+  // Remember scroll views render all children at once, while flat lists are lazy loaded which saves memory and processing time.
+  // they are loaded just before they are visible on the screen.
   return (
     <View className="flex-1 px-5 bg-primary">
       <Image source={images.bg} className="absolute w-full z-0" />
@@ -57,7 +63,9 @@ export default function Index() {
                   renderItem={({ item, index }) => (
                     <TrendingCard movie={item} index={index} />
                   )}
-                  keyExtractor={(item) => item.movie_id.toString()}
+                  keyExtractor={(item, index) =>
+                    item.$id || `${item.movie_id}-${item.searchTerm}-${index}`
+                  }
                   ItemSeparatorComponent={() => <View className="w-4" />}
                 />
               </View>
